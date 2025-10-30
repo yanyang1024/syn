@@ -188,6 +188,45 @@ class PolygonUniquenessDetector:
         if details:
             result['details'] = details
         return result
+
+    def _save_results(self, image, polygons, unique_idx, uniqueness_report, image_path):
+        """保存可视化结果和分析报告"""
+        try:
+            self._save_visualization(image, polygons, unique_idx, image_path)
+        except Exception as e:
+            logger.error(f"保存可视化结果时发生错误: {e}")
+        
+        try:
+            base_name = os.path.splitext(os.path.basename(image_path))[0]
+            report_path = os.path.join(self.config.OUTPUT_DIR, f"{base_name}_analysis.json")
+            
+            sanitized_polygons = []
+            for polygon in polygons:
+                sanitized_polygons.append({
+                    'id': int(polygon['id']),
+                    'bbox': [int(polygon['bbox'][0]), int(polygon['bbox'][1]), 
+                             int(polygon['bbox'][2]), int(polygon['bbox'][3])],
+                    'area': float(polygon['area']),
+                    'perimeter': float(polygon['perimeter']),
+                    'vertices': int(polygon['vertices']),
+                    'aspect_ratio': float(polygon['aspect_ratio']),
+                    'extent': float(polygon['extent']),
+                    'solidity': float(polygon['solidity'])
+                })
+            
+            report_content = {
+                'image': os.path.basename(image_path),
+                'most_unique_index': int(unique_idx),
+                'uniqueness_report': uniqueness_report,
+                'polygons': sanitized_polygons
+            }
+            
+            with open(report_path, 'w', encoding='utf-8') as f:
+                json.dump(report_content, f, ensure_ascii=False, indent=2)
+            
+            logger.info(f"分析报告已保存: {report_path}")
+        except Exception as e:
+            logger.error(f"保存分析报告时发生错误: {e}")
     
     def _save_visualization(self, image, polygons, unique_idx, original_path):
         """保存可视化结果"""

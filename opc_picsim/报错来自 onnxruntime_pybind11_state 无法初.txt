@@ -1,0 +1,15 @@
+报错来自 onnxruntime_pybind11_state 无法初始化，触发点是我们在表格文字翻译时加载 RapidOCR 模型（见 pdf2zh_next/high_level.py (lines 446-449)，默认 translate_table_text=True 配置在 pdf2zh_next/config/model.py (line 166)）。
+这通常是 Windows 缺少 onnxruntime 所需的本地依赖（VC++ 运行库）、架构不匹配或 wheel 没有正确安装导致的 DLL 载入失败。
+建议处理步骤
+
+在目标机器上直接检查 onnxruntime 是否能导入：python -c "import onnxruntime as ort; print(ort.__version__)"。若仍报同样的 DLL 错误，说明运行环境本身缺少依赖。
+确认操作系统是 Win10/11 64 位，并安装/修复「Microsoft Visual C++ 2015-2022 x64 可再发行组件」。这是 onnxruntime 官方要求，缺失时就会出现 DLL 初始化失败。
+重新安装匹配架构的 onnxruntime 轮子（RapidOCR 1.4.4 依赖 CPU 版即可）：
+pip install --force-reinstall --no-cache-dir onnxruntime==1.17.1 rapidocr-onnxruntime==1.4.4
+如果你的 Python 是 32 位或旧版本，需要改用对应架构/版本的 wheel。
+确认环境变量 PATH 中没有指向旧版本 onnxruntime 的残留目录；必要时可新建干净的 venv，把 pdf2zh_next 及依赖重新安装到这个虚拟环境内。
+临时绕过法
+
+如果短期内无法安装 onnxruntime，可以把表格文字翻译关掉，让程序不去触发 RapidOCR：
+在配置里把 pdf.translate_table_text = false（或 GUI 高级设置里取消“翻译表格文字”），即可跳过 RapidOCRModel 的加载。不过这会失去 PDF 表格内容的单元格级翻译能力。
+按以上步骤处理后，重新运行 pdf2zh_next --gui 并导入 PDF 即可验证是否恢复正常。若还有问题，可以把 python -c "import onnxruntime" 的完整报错贴出来，以便针对环境再做分析
