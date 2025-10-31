@@ -14,6 +14,8 @@ import logging
 import argparse
 from typing import Tuple
 
+import numpy as np
+
 from config import Config
 from polygon_detector import PolygonDetector
 from similarity_calculator import SimilarityCalculator
@@ -195,6 +197,11 @@ class PolygonUniquenessDetector:
             self._save_visualization(image, polygons, unique_idx, image_path)
         except Exception as e:
             logger.error(f"保存可视化结果时发生错误: {e}")
+
+        try:
+            self._save_unique_polygon(image, polygons[unique_idx], image_path)
+        except Exception as e:
+            logger.error(f"保存唯一联通体图像时发生错误: {e}")
         
         try:
             base_name = os.path.splitext(os.path.basename(image_path))[0]
@@ -227,7 +234,7 @@ class PolygonUniquenessDetector:
             logger.info(f"分析报告已保存: {report_path}")
         except Exception as e:
             logger.error(f"保存分析报告时发生错误: {e}")
-    
+
     def _save_visualization(self, image, polygons, unique_idx, original_path):
         """保存可视化结果"""
         # 绘制所有多边形
@@ -249,9 +256,38 @@ class PolygonUniquenessDetector:
                     serializable_report[key] = value.tolist()
                 else:
                     serializable_report[key] = value
-            
+
             json.dump(serializable_report, f, ensure_ascii=False, indent=2)
         print(f"   详细报告已保存: {report_path}")
+
+    def _save_unique_polygon(self, image, polygon_info, original_path):
+        """将最终选中的联通体单独导出为PNG"""
+        if image is None or polygon_info is None:
+            raise ValueError("原始图像或多边形信息为空，无法保存唯一联通体")
+
+        polygon = polygon_info.get('polygon')
+        bbox = polygon_info.get('bbox')
+        if polygon is None or bbox is None:
+            raise ValueError("多边形数据缺失，无法导出唯一联通体")
+
+        # 创建掩码并填充唯一多边形区域
+        mask = np.zeros(image.shape[:2], dtype=np.uint8)
+        cv2.drawContours(mask, [polygon], -1, 255, thickness=-1)
+
+        # 使用掩码提取该联通体
+        isolated = cv2.bitwise_and(image, image, mask=mask)
+
+        x, y, w, h = bbox
+        x = max(0, int(x))
+        y = max(0, int(y))
+        w = max(1, int(w))
+        h = max(1, int(h))
+        cropped = isolated[y:y + h, x:x + w]
+
+        base_name = os.path.splitext(os.path.basename(original_path))[0]
+        unique_path = os.path.join(self.config.OUTPUT_DIR, f"{base_name}_unique.png")
+        cv2.imwrite(unique_path, cropped)
+        logger.info(f"唯一联通体图像已保存: {unique_path}")
 
 def main():
     """主函数"""
