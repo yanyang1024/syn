@@ -1,0 +1,291 @@
+分析程序运行时的打印输出，找到该过程下载的所有文件所在的文件路径，方便之后直接进行离线移植。这是我运行gr应用传入一个英文文档执行翻译后，命令行的打印输出的一部分
+```
+(py311localpdf2zh) PS J:\PDFMathTranslate-next> pdf2zh_next --gui --server-port 8909
+[10/30/25 01:52:31] WARNING  WARNING:pdf2zh_next.config.cli_env_model:No translation engine          cli_env_model.py:77
+                             selected, using local Ollama service
+                    INFO     INFO:pdf2zh_next.config.model:Using translation engine: Ollama                 model.py:258
+                    WARNING  WARNING:pdf2zh_next.config.cli_env_model:No translation engine          cli_env_model.py:77
+                             selected, using local Ollama service
+[10/30/25 01:52:34] WARNING  WARNING:pdf2zh_next.config.cli_env_model:No translation engine          cli_env_model.py:77
+                             selected, using local Ollama service
+                    INFO     INFO:pdf2zh_next.config.model:Using translation engine: Ollama                 model.py:258
+                    WARNING  WARNING:pdf2zh_next.config.cli_env_model:No translation engine          cli_env_model.py:77
+                             selected, using local Ollama service
+* Running on local URL:  http://0.0.0.0:8909
+* To create a public link, set `share=True` in `launch()`.
+[10/30/25 01:56:22] INFO     INFO:pdf2zh_next.gui:QPS: 4, Pool Workers: None                                  gui.py:422
+                    INFO     INFO:pdf2zh_next.config.model:Using translation engine: Ollama                 model.py:258
+                    INFO     INFO:pdf2zh_next.config.model:Using translation engine: Ollama                 model.py:258
+                    INFO     INFO:pdf2zh_next.config.model:Using translation engine: Ollama                 model.py:258
+                    INFO     INFO:pdf2zh_next.high_level:translate in subprocess                       high_level.py:525
+[10/30/25 01:56:23] INFO     INFO:pdf2zh_next.translator.utils:INFO:pdf2zh_next.translator.utils:Using       utils.py:36
+                             Ollama translator
+[10/30/25 01:57:10] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:table detection       assets.py:218
+                             rapidocr model not found or corrupted, downloading...
+[10/30/25 01:57:12] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Download table        assets.py:227
+                             detection rapidocr model from modelscope success
+[10/30/25 01:57:13] INFO     INFO:babeldoc.docvision.base_doclayout:INFO:babeldoc.docvision.base_do base_doclayout.py:43
+                             clayout:Loading ONNX model...
+                    INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:doclayout onnx model  assets.py:196
+                             not found or corrupted, downloading...
+[10/30/25 01:57:24] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Download doclayout    assets.py:207
+                             onnx model from modelscope success
+                    INFO     INFO:babeldoc.docvision.doclayout:INFO:babeldoc.docvision.doclayout:Availab doclayout.py:54
+                             le Provider: CPUExecutionProvider
+[10/30/25 01:57:25] INFO     INFO:babeldoc.format.pdf.high_level:INFO:babeldoc.format.pdf.high_level:s high_level.py:600
+                             tart to translate: pdf2zh_files\2d518c31-6212-4140-9a74-e44283255967\Lin
+                             et al_2017_Feature Pyramid Networks for Object Detection.pdf
+                    INFO     INFO:pdf2zh_next.gui:Progress: 0.0, Parse PDF and Create Intermediate            gui.py:737
+                             Representation (1/1, 0/10)
+                    INFO     INFO:pdf2zh_next.gui:Progress: 0.010859867712659592, Parse PDF and Create        gui.py:737
+                             Intermediate Representation (1/1, 1/10)
+                    INFO     INFO:pdf2zh_next.gui:Progress: 0.043439470850638366, Parse PDF and Create        gui.py:737
+                             Intermediate Representation (1/1, 4/10)
+[10/30/25 01:57:26] INFO     INFO:pdf2zh_next.gui:Progress: 0.06515920627595755, Parse PDF and Create         gui.py:737
+                             Intermediate Representation (1/1, 6/10)
+                    INFO     INFO:pdf2zh_next.gui:Progress: 0.09773880941393631, Parse PDF and Create         gui.py:737
+                             Intermediate Representation (1/1, 9/10)
+                    INFO     INFO:pdf2zh_next.gui:Progress: 0.10859867712659592, Parse PDF and Create         gui.py:737
+                             Intermediate Representation (1/1, 10/10)
+                    INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSerifCN-Bold.ttf not
+                             found or corrupted, downloading...
+                    WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Network error    assets.py:66
+                             occurred: [Errno 11004] getaddrinfo failed, will retry
+                    WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Get font        assets.py:118
+                             metadata failed, retrying in 1.0 seconds... (Attempt 1/3)
+[10/30/25 01:57:27] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSerifCN-Bold.ttf from modelscope
+[10/30/25 01:57:30] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSerifCN-Regular.ttf not
+                             found or corrupted, downloading...
+                    WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Network error    assets.py:66
+                             occurred: [Errno 11004] getaddrinfo failed, will retry
+                    WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Get font        assets.py:118
+                             metadata failed, retrying in 1.0 seconds... (Attempt 1/3)
+[10/30/25 01:57:31] WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Network error    assets.py:66
+                             occurred: [Errno 11004] getaddrinfo failed, will retry
+                    WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Get font        assets.py:118
+                             metadata failed, retrying in 2.0 seconds... (Attempt 2/3)
+                    INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSerifCN-Regular.ttf from modelscope
+[10/30/25 01:57:33] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSansCN-Bold.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:57:34] WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Network error    assets.py:66
+                             occurred: [Errno 11004] getaddrinfo failed, will retry
+                    WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Get font        assets.py:118
+                             metadata failed, retrying in 1.0 seconds... (Attempt 1/3)
+                    INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSansCN-Bold.ttf from modelscope
+[10/30/25 01:57:37] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSansCN-Regular.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:57:38] WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Network error    assets.py:66
+                             occurred: [Errno 11004] getaddrinfo failed, will retry
+                    WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Get font        assets.py:118
+                             metadata failed, retrying in 1.0 seconds... (Attempt 1/3)
+                    INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSansCN-Regular.ttf from modelscope
+[10/30/25 01:57:40] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSerifTW-Bold.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:57:41] WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Network error    assets.py:66
+                             occurred: [Errno 11004] getaddrinfo failed, will retry
+                    WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Get font        assets.py:118
+                             metadata failed, retrying in 1.0 seconds... (Attempt 1/3)
+                    INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSerifTW-Bold.ttf from modelscope
+[10/30/25 01:57:43] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSerifTW-Regular.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:57:44] WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Network error    assets.py:66
+                             occurred: [Errno 11004] getaddrinfo failed, will retry
+                    WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Get font        assets.py:118
+                             metadata failed, retrying in 1.0 seconds... (Attempt 1/3)
+                    INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSerifTW-Regular.ttf from modelscope
+[10/30/25 01:57:47] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSansTW-Bold.ttf not
+                             found or corrupted, downloading...
+                    WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Network error    assets.py:66
+                             occurred: [Errno 11004] getaddrinfo failed, will retry
+                    WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Get font        assets.py:118
+                             metadata failed, retrying in 1.0 seconds... (Attempt 1/3)
+[10/30/25 01:57:48] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSansTW-Bold.ttf from modelscope
+[10/30/25 01:57:50] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSansTW-Regular.ttf not
+                             found or corrupted, downloading...
+                    WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Network error    assets.py:66
+                             occurred: [Errno 11004] getaddrinfo failed, will retry
+                    WARNING  WARNING:babeldoc.assets.assets:WARNING:babeldoc.assets.assets:Get font        assets.py:118
+                             metadata failed, retrying in 1.0 seconds... (Attempt 1/3)
+                    INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSansTW-Regular.ttf from modelscope
+[10/30/25 01:58:04] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSerifHK-Bold.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:58:06] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSerifHK-Bold.ttf from github
+[10/30/25 01:58:09] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSerifHK-Regular.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:58:11] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSerifHK-Regular.ttf from github
+[10/30/25 01:58:14] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSansHK-Bold.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:58:16] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSansHK-Bold.ttf from github
+[10/30/25 01:58:19] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSansHK-Regular.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:58:21] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSansHK-Regular.ttf from github
+[10/30/25 01:58:24] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSerifKR-Bold.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:58:28] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSerifKR-Bold.ttf from modelscope
+[10/30/25 01:58:34] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSerifKR-Regular.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:58:35] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSerifKR-Regular.ttf from github
+[10/30/25 01:58:39] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSansKR-Bold.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:58:41] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSansKR-Bold.ttf from github
+[10/30/25 01:58:44] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSansKR-Regular.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:58:45] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSansKR-Regular.ttf from github
+[10/30/25 01:58:49] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSerifJP-Bold.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:58:51] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSerifJP-Bold.ttf from github
+[10/30/25 01:58:54] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSerifJP-Regular.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:58:55] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSerifJP-Regular.ttf from github
+[10/30/25 01:58:59] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSansJP-Bold.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:59:00] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSansJP-Bold.ttf from github
+[10/30/25 01:59:03] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\SourceHanSansJP-Regular.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:59:05] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             SourceHanSansJP-Regular.ttf from github
+[10/30/25 01:59:08] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\NotoSerif-Regular.ttf not found
+                             or corrupted, downloading...
+[10/30/25 01:59:09] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             NotoSerif-Regular.ttf from github
+[10/30/25 01:59:11] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\NotoSerif-Bold.ttf not found or
+                             corrupted, downloading...
+[10/30/25 01:59:13] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             NotoSerif-Bold.ttf from github
+[10/30/25 01:59:15] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\NotoSans-Regular.ttf not found
+                             or corrupted, downloading...
+[10/30/25 01:59:17] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             NotoSans-Regular.ttf from github
+[10/30/25 01:59:19] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\NotoSans-Bold.ttf not found or
+                             corrupted, downloading...
+[10/30/25 01:59:21] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             NotoSans-Bold.ttf from github
+[10/30/25 01:59:23] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\LXGWWenKaiGB-Regular.1.520.ttf
+                             not found or corrupted, downloading...
+[10/30/25 01:59:24] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             LXGWWenKaiGB-Regular.1.520.ttf from github
+[10/30/25 01:59:30] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\LXGWWenKaiTC-Regular.1.520.ttf
+                             not found or corrupted, downloading...
+[10/30/25 01:59:32] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             LXGWWenKaiTC-Regular.1.520.ttf from github
+[10/30/25 01:59:36] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\MaruBuri-Regular.ttf not found
+                             or corrupted, downloading...
+[10/30/25 01:59:38] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             MaruBuri-Regular.ttf from github
+[10/30/25 01:59:40] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\KleeOne-Regular.ttf not found or
+                             corrupted, downloading...
+[10/30/25 01:59:42] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             KleeOne-Regular.ttf from github
+[10/30/25 01:59:45] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\NotoSans-Italic.ttf not found or
+                             corrupted, downloading...
+[10/30/25 01:59:48] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             NotoSans-Italic.ttf from github
+[10/30/25 01:59:50] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\NotoSans-BoldItalic.ttf not
+                             found or corrupted, downloading...
+[10/30/25 01:59:52] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             NotoSans-BoldItalic.ttf from github
+[10/30/25 01:59:54] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\NotoSerif-Italic.ttf not found
+                             or corrupted, downloading...
+[10/30/25 01:59:57] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             NotoSerif-Italic.ttf from github
+[10/30/25 01:59:59] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\NotoSerif-BoldItalic.ttf not
+                             found or corrupted, downloading...
+[10/30/25 02:00:01] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             NotoSerif-BoldItalic.ttf from github
+[10/30/25 02:00:04] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\GoNotoKurrent-Regular.ttf not
+                             found or corrupted, downloading...
+[10/30/25 02:00:06] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             GoNotoKurrent-Regular.ttf from github
+[10/30/25 02:00:11] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:Font                  assets.py:261
+                             C:\Users\Administrator\.cache\babeldoc\fonts\GoNotoKurrent-Bold.ttf not found
+                             or corrupted, downloading...
+[10/30/25 02:00:13] INFO     INFO:babeldoc.assets.assets:INFO:babeldoc.assets.assets:download              assets.py:276
+                             GoNotoKurrent-Bold.ttf from github
+[10/30/25 02:00:18] INFO     INFO:pdf2zh_next.gui:Progress: 0.10859867712659592, DetectScannedFile (1/1,      gui.py:737
+                             0/10)
+                    INFO     INFO:pdf2zh_next.gui:Progress: 0.11048300261498233, DetectScannedFile (1/1,      gui.py:737
+                             1/10)
+[10/30/25 02:00:19] INFO     INFO:pdf2zh_next.gui:Progress: 0.12744193201045995, DetectScannedFile (1/1,      gui.py:737
+                             10/10)
+                    INFO     INFO:pdf2zh_next.gui:Progress: 0.12744193201045995, Parse Page Layout (1/1,      gui.py:737
+                             0/20)
+[10/30/25 02:00:23] INFO     INFO:pdf2zh_next.gui:Progress: 0.13283725580679895, Parse Page Layout (1/1,      gui.py:737
+                             1/20)
+[10/30/25 02:00:27] INFO     INFO:pdf2zh_next.gui:Progress: 0.13823257960313798, Parse Page Layout (1/1,      gui.py:737
+                             2/20)
+[10/30/25 02:00:32] INFO     INFO:pdf2zh_next.gui:Progress: 0.143627903399477, Parse Page Layout (1/1, 3/20)  gui.py:737
+[10/30/25 02:00:36] INFO     INFO:pdf2zh_next.gui:Progress: 0.14902322719581604, Parse Page Layout (1/1,      gui.py:737
+                             4/20)
+[10/30/25 02:00:40] INFO     INFO:pdf2zh_next.gui:Progress: 0.15441855099215507, Parse Page Layout (1/1,      gui.py:737
+                             5/20)
+[10/30/25 02:00:43] INFO     INFO:pdf2zh_next.gui:Progress: 0.1598138747884941, Parse Page Layout (1/1, 6/20) gui.py:737
+[10/30/25 02:00:48] INFO     INFO:pdf2zh_next.gui:Progress: 0.1652091985848331, Parse Page Layout (1/1, 7/20) gui.py:737
+[10/30/25 02:00:51] INFO     INFO:pdf2zh_next.gui:Progress: 0.17060452238117216, Parse Page Layout (1/1,      gui.py:737
+                             8/20)
+[10/30/25 02:00:55] INFO     INFO:pdf2zh_next.gui:Progress: 0.17599984617751116, Parse Page Layout (1/1,      gui.py:737
+                             9/20)
+[10/30/25 02:00:59] INFO     INFO:pdf2zh_next.gui:Progress: 0.1813951699738502, Parse Page Layout (1/1,       gui.py:737
+                             10/20)
+[10/30/25 02:01:05] INFO     INFO:pdf2zh_next.gui:Progress: 0.1867904937701892, Parse Page Layout (1/1,       gui.py:737
+                             11/20)
+[10/30/25 02:01:06] INFO     INFO:pdf2zh_next.gui:Progress: 0.20297646515920628, Parse Page Layout (1/1,      gui.py:737
+                             14/20)
+                    INFO     INFO:pdf2zh_next.gui:Progress: 0.23534840793724043, Parse Page Layout (1/1,      gui.py:737
+                             20/20)
+                    INFO     INFO:pdf2zh_next.gui:Progress: 0.23534840793724043, Parse Page Layout (1/1,      gui.py:737
+                             20/20)
+[10/30/25 02:01:07] INFO     INFO:pdf2zh_next.gui:Progress: 0.23534840793724043, Parse Paragraphs (1/1, 0/10) gui.py:737
+...
+```
