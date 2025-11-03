@@ -54,6 +54,92 @@ class PolygonUniquenessDetector:
         if not os.path.exists(self.config.OUTPUT_DIR):
             os.makedirs(self.config.OUTPUT_DIR)
             logger.info(f"创建输出目录: {self.config.OUTPUT_DIR}")
+
+    def _compute_integral_image(self, binary: np.ndarray) -> np.ndarray:
+        """计算二值图的积分图（用于快速滑窗面积统计）"""
+        mask = (binary > 0).astype(np.uint8)
+        integral = cv2.integral(mask)
+        return integral
+
+    def _rect_sum(self, integral: np.ndarray, x: int, y: int, w: int, h: int) -> int:
+        """使用积分图计算矩形区域的前景像素数"""
+        # 注意：cv2.integral 的尺寸为 (H+1, W+1)，索引需偏移 +1
+        x2, y2 = x + w, y + h
+        return int(
+            integral[y2, x2] - integral[y, x2] - integral[y2, x] + integral[y, x]
+        )
+
+    def _generate_region_candidates(self, binary: np.ndarray, polygons: list, polygon_info: dict):
+        """为指定多边形生成同面积区域候选（联通/非联通）"""
+        target_area = float(polygon_info['area'])
+        tol = self.config.AREA_TOLERANCE_RATIO
+        min_area = target_area * (1.0 - tol)
+        max_area = target_area * (1.0 + tol)
+
+        connected_candidates = []
+        non_connected_candidates = []
+
+        # 1) 联通体候选：利用其他已检测多边形的面积接近者
+        for other in polygons:
+            if other['id'] == polygon_info['id']:
+                continue
+            a = float(other['area'])
+            if min_area <= a <= max_area:
+                connected_candidates.append({
+                    'is_connected': True,
+                    'polygon': other['polygon'],
+                    'area': a
+                })
+
+        # 2) 非联通候选：在二值图上按滑窗采样，选择同面积（前景像素数）近似的patch
+        h_img, w_img = binary.shape[:2]
+        integral = self._compute_integral_image(binary)
+
+        # 两组窗口尺寸：使用目标bbox尺寸与平方近似尺寸
+        bx, by, bw, bh = polygon_info['bbox']
+        # 保证正值
+        bw = max(1, int(bw))
+        bh = max(1, int(bh))
+        side = int(max(1, np.sqrt(target_area)))
+        window_sizes = [(bw, bh), (side, side)]
+
+        stride = max(1, int(self.config.REGION_SCAN_STRIDE))
+        candidate_records = []  # (diff, x, y, w, h, area)
+        for (ww, hh) in window_sizes:
+            if ww <= 0 or hh <= 0:
+                continue
+            if ww > w_img or hh > h_img:
+                continue
+            for y in range(0, h_img - hh + 1, stride):
+                for x in range(0, w_img - ww + 1, stride):
+                    area_sum = self._rect_sum(integral, x, y, ww, hh)
+                    if min_area <= area_sum <= max_area:
+                        diff = abs(area_sum - target_area)
+                        candidate_records.append((diff, x, y, ww, hh, area_sum))
+
+        # 选取前 N 个最接近面积的候选
+        candidate_records.sort(key=lambda t: t[0])
+        max_cand = int(self.config.REGION_MAX_CANDIDATES)
+        candidate_records = candidate_records[:max_cand]
+
+        for _, x, y, ww, hh, area_sum in candidate_records:
+            patch = binary[y:y+hh, x:x+ww]
+            # 计算连通组件数量（排除背景）
+            num_labels, labels = cv2.connectedComponents((patch > 0).astype(np.uint8), connectivity=8)
+            num_components = max(0, num_labels - 1)
+            if num_components <= 1:
+                # 联通patch不在此列表中，避免与已检测多边形重复；如需也可添加到connected候选
+                continue
+            non_connected_candidates.append({
+                'is_connected': False,
+                'mask': patch,
+                'num_components': int(num_components),
+                'area': float(area_sum),
+                'bbox': (x, y, ww, hh)
+            })
+
+        return connected_candidates, non_connected_candidates
+
     
     def process_image(self, image_path: str, min_area: float = None, max_area: float = None) -> dict:
         """处理图像并返回结果"""
@@ -106,7 +192,59 @@ class PolygonUniquenessDetector:
                 self.profiler.start_timer("唯一性分析")
             
             logger.info("3. 分析唯一性...")
-            uniqueness_report = self.analyzer.get_uniqueness_report(filtered_polygons)
+            # 新逻辑：基于“多边形 vs 同面积区域（联通/非联通）”的相似
+            # 1) 准备二值图供滑窗与连通性分析
+            binary_image = self.detector.preprocess_image(original_image)
+
+            # 2) 计算每个多边形与同面积候选区域的相似向量
+            sim_calculator = SimilarityCalculator(self.config, self.debug)
+            per_polygon_connected_sims = []
+            per_polygon_nonconnected_sims = []
+            uniqueness_scores = []
+
+            for poly in filtered_polygons:
+                connected_cands, non_connected_cands = self._generate_region_candidates(
+                    binary_image, filtered_polygons, poly
+                )
+
+                # 计算相似度
+                conn_sims = [sim_calculator.calculate_region_similarity(poly, rc) for rc in connected_cands]
+                nonconn_sims = [sim_calculator.calculate_region_similarity(poly, rc) for rc in non_connected_cands]
+                per_polygon_connected_sims.append(conn_sims)
+                per_polygon_nonconnected_sims.append(nonconn_sims)
+
+                # 唯一性评分：区分联通/非联通影响
+                if len(conn_sims) > 0:
+                    max_connected = float(np.max(conn_sims))
+                else:
+                    max_connected = 0.0
+                if len(nonconn_sims) > 0:
+                    avg_nonconnected = float(np.mean(nonconn_sims))
+                else:
+                    avg_nonconnected = 0.0
+
+                score = (
+                    self.config.UNIQUENESS_WEIGHT_CONNECTED * (1.0 - max_connected) +
+                    self.config.UNIQUENESS_WEIGHT_NONCONNECTED * (1.0 - avg_nonconnected)
+                )
+                uniqueness_scores.append(score)
+
+            uniqueness_scores = np.array(uniqueness_scores, dtype=np.float32)
+            most_unique_idx = int(np.argmax(uniqueness_scores))
+
+            # 3) 组装报告
+            uniqueness_report = {
+                'total_polygons': len(filtered_polygons),
+                'uniqueness_scores': uniqueness_scores.tolist(),
+                'most_unique_index': most_unique_idx,
+                'most_unique_score': float(uniqueness_scores[most_unique_idx]) if len(uniqueness_scores) > 0 else 0.0,
+                'analysis_summary': (
+                    f"采用同面积区域相似度（联通/非联通）计算。最唯一ID: {most_unique_idx}, "
+                    f"评分: {float(uniqueness_scores[most_unique_idx]) if len(uniqueness_scores)>0 else 0.0:.3f}"
+                ),
+                'connected_similarity_vectors': per_polygon_connected_sims,
+                'nonconnected_similarity_vectors': per_polygon_nonconnected_sims,
+            }
             
             if self.debug:
                 self.profiler.end_timer("唯一性分析")

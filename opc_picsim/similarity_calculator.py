@@ -142,7 +142,112 @@ class SimilarityCalculator:
         
         except:
             return 0.0
-    
+
+    def calculate_mask_hu_similarity(self, mask1: np.ndarray, mask2: np.ndarray) -> float:
+        """基于掩码（可能非联通）计算Hu矩相似度"""
+        try:
+            if mask1 is None or mask2 is None:
+                return 0.0
+            # 统一尺寸到固定分辨率以增强可比性
+            target_size = (500, 500)
+            m1 = cv2.resize(mask1, target_size, interpolation=cv2.INTER_NEAREST)
+            m2 = cv2.resize(mask2, target_size, interpolation=cv2.INTER_NEAREST)
+
+            moments1 = cv2.moments(m1)
+            moments2 = cv2.moments(m2)
+            hu1 = cv2.HuMoments(moments1).flatten()
+            hu2 = cv2.HuMoments(moments2).flatten()
+            hu1 = -np.sign(hu1) * np.log10(np.abs(hu1) + 1e-10)
+            hu2 = -np.sign(hu2) * np.log10(np.abs(hu2) + 1e-10)
+            distance = np.linalg.norm(hu1 - hu2)
+            return 1.0 / (1.0 + distance)
+        except Exception:
+            return 0.0
+
+    def _principal_direction_from_mask(self, mask: np.ndarray) -> np.ndarray:
+        """从掩码非零点估计主方向向量"""
+        ys, xs = np.nonzero(mask)
+        if len(xs) < 2:
+            return np.array([1.0, 0.0])
+        points = np.stack([xs, ys], axis=1).astype(np.float32)
+        cov = np.cov(points.T)
+        # 使用 eigh 保证实数特征分解（协方差矩阵为对称）
+        eigenvalues, eigenvectors = np.linalg.eigh(cov)
+        return eigenvectors[:, np.argmax(eigenvalues)]
+
+    def calculate_region_similarity(self, polygon_info: dict, region_info: dict) -> float:
+        """计算多边形与同面积区域（联通或非联通）的相似度
+        region_info 结构要求：
+          - 'is_connected': bool
+          - 'area': float
+          - 当 is_connected=True:
+              - 'polygon': np.ndarray （区域主轮廓近似）
+          - 当 is_connected=False:
+              - 'mask': np.ndarray （二值掩码，非联通）
+              - 'num_components': int
+        """
+        try:
+            # 尺寸相似度（面积比例）
+            size_similarity = self.calculate_size_similarity(polygon_info['area'], region_info['area'])
+
+            if region_info.get('is_connected', True):
+                # 使用现有多边形综合相似度（形状+方向+尺寸）
+                poly2 = {
+                    'polygon': region_info['polygon'],
+                    'area': region_info['area']
+                }
+                shape_sim1 = self.calculate_shape_similarity(polygon_info['polygon'], poly2['polygon'])
+                shape_sim2 = self.calculate_hu_moments_similarity(polygon_info['polygon'], poly2['polygon'])
+                shape_similarity = (shape_sim1 + shape_sim2) / 2.0
+                orientation_similarity = self.calculate_orientation_similarity(
+                    polygon_info['polygon'], poly2['polygon']
+                )
+                overall_similarity = (
+                    self.config.SHAPE_SIMILARITY_WEIGHT * shape_similarity +
+                    self.config.SIZE_SIMILARITY_WEIGHT * size_similarity +
+                    self.config.ORIENTATION_SIMILARITY_WEIGHT * orientation_similarity
+                )
+                return overall_similarity
+            else:
+                # 非联通：使用掩码Hu相似度 + 方向相似度（掩码） + 尺寸 + 碎裂惩罚
+                region_mask = region_info['mask']
+                h, w = region_mask.shape[:2]
+                poly_mask = np.zeros((h, w), dtype=np.uint8)
+                try:
+                    poly = polygon_info['polygon'].reshape(-1, 2).astype(np.float32)
+                    # 归一化到中心并缩放到区域尺寸的40%半径
+                    poly -= poly.mean(axis=0)
+                    max_norm = np.max(np.linalg.norm(poly, axis=1))
+                    scale = 0.4 * min(w, h) / (max_norm + 1e-6)
+                    poly_scaled = (poly * scale + np.array([w/2.0, h/2.0])).astype(np.int32)
+                    cv2.fillPoly(poly_mask, [poly_scaled], 255)
+                except Exception:
+                    pass
+
+                hu_similarity = self.calculate_mask_hu_similarity(poly_mask, region_mask)
+
+                # 掩码方向相似度（基于主方向）
+                dir1 = self._principal_direction_from_mask(poly_mask)
+                dir2 = self._principal_direction_from_mask(region_mask)
+                dot = float(np.clip(np.dot(dir1, dir2), -1.0, 1.0))
+                angle_diff = np.arccos(np.abs(dot))
+                orientation_similarity = max(0.0, 1.0 - (angle_diff / (np.pi / 2)))
+
+                # 碎裂惩罚：组件越多相似度越低
+                num_comp = max(1, int(region_info.get('num_components', 1)))
+                penalty = 1.0 / (1.0 + self.config.FRAGMENTATION_PENALTY_ALPHA * (num_comp - 1))
+
+                overall_similarity = (
+                    self.config.SHAPE_SIMILARITY_WEIGHT * hu_similarity +
+                    self.config.SIZE_SIMILARITY_WEIGHT * size_similarity +
+                    self.config.ORIENTATION_SIMILARITY_WEIGHT * orientation_similarity
+                )
+                overall_similarity *= penalty
+                return overall_similarity
+        except Exception as e:
+            logger.error(f"计算区域相似度时发生错误: {str(e)}")
+            return 0.0
+
     def calculate_overall_similarity(self, poly1_info: dict, poly2_info: dict) -> float:
         """计算综合相似度"""
         # 形状相似度（结合Hausdorff距离和Hu矩）
