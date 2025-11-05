@@ -1,0 +1,55 @@
+What I Added
+
+FastAPI server: pdf2zh_next/api_server.py
+Client CLI: pdf2zh_next/api_client.py
+Both reuse your existing pipeline (do_translate_async_stream) and add a large-PDF path:
+
+Preprocess large PDFs (>30MB or >1000 pages): split into parts, run part translations in parallel (async + subprocess), then merge outputs and return final files.
+Regular PDFs (or when specific pages are requested): translate directly without splitting.
+Server
+
+Endpoint: POST /translate
+Request (JSON):
+pdf_path: absolute path to the PDF on the server
+source_lang: e.g. en or auto
+target_lang: e.g. zh
+output_dir: directory for results
+pages (optional): e.g. 1-3,5
+chunk_pages (optional): override split chunk size (default 200)
+Response (JSON):
+large_file_mode: whether splitting was used
+final_mono_pdf, final_dual_pdf: merged outputs (or direct outputs)
+chunk_outputs: list of per-chunk mono/dual paths
+output_dir, work_dir
+Health check: GET /healthz
+Run: uvicorn pdf2zh_next.api_server:app --host 0.0.0.0 --port 8000
+File refs:
+
+Server: pdf2zh_next/api_server.py:1
+Client: pdf2zh_next/api_client.py:1
+Client
+
+CLI usage:
+python -m pdf2zh_next.api_client --server http://127.0.0.1:8000 --pdf J:\path\paper.pdf --src en --tgt zh --out J:\output_dir
+Options:
+--pages "1-3,5" to translate only specific pages (disables splitting)
+--chunk-pages 150 to tweak split size for large PDFs
+Prints the JSON response (including final merged files and per-chunk outputs).
+Large PDF Handling
+
+Triggers when size > 30MB or pages > 1000 (pages detected via PyMuPDF).
+Split into chunks (default 200 pages, configurable).
+Parallel translate chunks (bounded by CPU count, max 8 parallel).
+Merge chunk mono PDFs into <name>_mono_merged.pdf, dual into <name>_dual_merged.pdf.
+Notes
+
+The API expects language codes (e.g., en, zh, ja). It uses your existing environment-configured translation engine via ConfigManager, like the GUI.
+If pages is provided, splitting is skipped to ensure precise page selection.
+Output directories and intermediate work directories are created automatically.
+Quick Start
+
+Start server:
+uvicorn pdf2zh_next.api_server:app --host 0.0.0.0 --port 8000
+Call via client:
+python -m pdf2zh_next.api_client --server http://127.0.0.1:8000 --pdf J:\pdfs\big.pdf --src en --tgt zh --out J:\translated
+Result JSON includes final_mono_pdf and final_dual_pdf you can open or post-process.
